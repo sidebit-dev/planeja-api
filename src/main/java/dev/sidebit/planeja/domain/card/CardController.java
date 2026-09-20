@@ -29,4 +29,10 @@ public class CardController {
         var result = service.getDetails(id);
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody CardForm dataAtualization){
+        service.upadate(id, dataAtualization);
+        return ResponseEntity.noContent().build();
+    }
 }

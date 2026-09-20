@@ -8,6 +8,7 @@ import dev.sidebit.planeja.domain.card.mapper.CardMapper;
 import dev.sidebit.planeja.domain.card.model.CardEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class CardService {
     private CardMapper mapper;
 
     public CardDetail create(CardForm form){
-        var result = validator.validate(form);
+        var result = validator.validate(form, null);
 
         if(result.isInvalid()){
             throw new ValidationException(result.getFieldInvalids());
@@ -37,5 +38,19 @@ public class CardService {
                 .findById(id)
                 .map(mapper::toDetail)
                 .orElseThrow( () -> new RegisterNotFindException());
+    }
+
+    @Transactional
+    public void upadate(UUID id, CardForm dataAtualization) {
+        var entity = repository.findById(id)
+                .orElseThrow( () -> new RegisterNotFindException());
+        var result = validator.validate(dataAtualization, id);
+        if(result.isInvalid()){
+            throw new ValidationException(result.getFieldInvalids());
+        }
+
+        mapper.update(entity,dataAtualization);
+// Não precisa do comando abaixo com @Transaction
+// repository.save(entity);
     }
 }
