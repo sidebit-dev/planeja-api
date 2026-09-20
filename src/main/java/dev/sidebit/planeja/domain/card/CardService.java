@@ -1,5 +1,6 @@
 package dev.sidebit.planeja.domain.card;
 
+import dev.sidebit.planeja.common.exceptions.ValidationException;
 import dev.sidebit.planeja.domain.card.dto.CardDetail;
 import dev.sidebit.planeja.domain.card.dto.CardForm;
 import dev.sidebit.planeja.domain.card.mapper.CardMapper;
@@ -18,7 +19,11 @@ public class CardService {
     private CardMapper mapper;
 
     public CardDetail create(CardForm form){
-        validator.validate(form);
+        var result = validator.validate(form);
+
+        if(result.isInvalid()){
+            throw new ValidationException(result.getFieldInvalids());
+        }
         CardEntity entity = mapper.toEntity(form);
         repository.save(entity);
         return mapper.toDetail(entity);
