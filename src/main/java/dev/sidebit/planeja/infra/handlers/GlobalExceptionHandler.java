@@ -1,5 +1,6 @@
 package dev.sidebit.planeja.infra.handlers;
 
+import dev.sidebit.planeja.common.exceptions.RegisterNotFindException;
 import dev.sidebit.planeja.common.exceptions.ValidationException;
 import dev.sidebit.planeja.common.validation.FieldInvalid;
 import org.springframework.http.HttpStatus;
@@ -42,5 +43,17 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(RegisterNotFindException.class)
+    public ResponseEntity<?> handleRegisterNotFindException(RegisterNotFindException e){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                    "timestamp", LocalDateTime.now(),
+                    "status", HttpStatus.NOT_FOUND.value(),
+                    "error", e.getMessage(),
+                    "message", e.getMessage()
+                ));
     }
 }
